@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HNTOTP - 安全可靠的双因素认证管理工具</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* 头部样式 */
+        header {
+            text-align: center;
+            padding: 40px 0;
+            background: linear-gradient(135deg, #1a6dff 0%, #0d4fd9 100%);
+            color: white;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* 主要内容区域 */
+        section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        section:hover {
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            transform: translateY(-3px);
+        }
+        
+        h2 {
+            color: #1a6dff;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eef2ff;
+            display: flex;
+            align-items: center;
+        }
+        
+        h2 i {
+            margin-right: 10px;
+            background-color: #eef2ff;
+            padding: 8px;
+            border-radius: 8px;
+        }
+        
+        /* 关于应用部分 */
+        .about-content {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .about-text {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .app-mockup {
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+        }
+        
+        .phone-frame {
+            display: inline-block;
+            background: #1a1a1a;
+            border-radius: 30px;
+            padding: 20px 10px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .phone-screen {
+            width: 250px;
+            height: 500px;
+            background: linear-gradient(145deg, #0d4fd9, #1a6dff);
+            border-radius: 20px;
+            padding: 20px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .screen-header {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .token-list {
+            flex-grow: 1;
+            margin: 20px 0;
+        }
+        
+        .token-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .token-code {
+            font-family: monospace;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+        }
+        
+        .screen-footer {
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        /* 核心特性部分 */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .feature {
+            background-color: #f8faff;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .feature:hover {
+            background-color: #eef2ff;
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #1a6dff;
+            margin-bottom: 15px;
+        }
+        
+        .feature h3 {
+            margin-bottom: 10px;
+            color: #1a6dff;
+        }
+        
+        /* 隐私承诺部分 */
+        .privacy-list {
+            list-style-type: none;
+        }
+        
+        .privacy-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .privacy-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .privacy-list i {
+            color: #4CAF50;
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .privacy-policy-link {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 12px 25px;
+            background-color: #1a6dff;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        
+        .privacy-policy-link:hover {
+            background-color: #0d4fd9;
+        }
+        
+        /* 联系我们部分 */
+        .contact-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .developer-card {
+            flex: 1;
+            min-width: 250px;
+            background-color: #f8faff;
+            border-radius: 12px;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .developer-avatar {
+            width: 80px;
+            height: 80px;
+            background-color: #1a6dff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .contact-form {
+            flex: 2;
+            min-width: 300px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: #1a6dff;
+            outline: none;
+        }
+        
+        .submit-btn {
+            background-color: #1a6dff;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            background-color: #0d4fd9;
+        }
+        
+        /* 页脚样式 */
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 40px;
+            color: #666;
+            border-top: 1px solid #eee;
+        }
+        
+        .copyright {
+            margin-bottom: 10px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            section {
+                padding: 20px;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+            
+            .developer-card {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">FFTOTP</h1>
+            <p class="tagline">安全可靠的双因素认证管理工具</p>
+        </div>
+    </header>
+    
+    <main class="container">
+        <section id="about">
+            <h2><i class="fas fa-info-circle"></i> 关于应用</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>FFTOTP 是一款专注于安全和隐私的本地 TOTP（基于时间的一次性密码）管理应用。</p>
+                    <p>帮助您安全地管理各种在线账户的双因素认证令牌，所有数据完全保存在您的设备本地，永不上传。</p>
+                </div>
+                <div class="app-mockup">
+                    <div class="phone-frame">
+                        <div class="phone-screen">
+                            <div class="screen-header">FFTOTP</div>
+                            <div class="token-list">
+                                <div class="token-item">
+                                    <div>
+                                        <div style="font-weight: bold;">GitHub</div>
+                                        <div style="font-size: 0.8rem;">user@example.com</div>
+                                    </div>
+                                    <div class="token-code">8 5 3 2 7 1</div>
+                                </div>
+                                <div class="token-item">
+                                    <div>
+                                        <div style="font-weight: bold;">Google</div>
+                                        <div style="font-size: 0.8rem;">user@gmail.com</div>
+                                    </div>
+                                    <div class="token-code">4 9 2 6 3 8</div>
+                                </div>
+                                <div class="token-item">
+                                    <div>
+                                        <div style="font-weight: bold;">Microsoft</div>
+                                        <div style="font-size: 0.8rem;">user@outlook.com</div>
+                                    </div>
+                                    <div class="token-code">7 1 5 9 2 4</div>
+                                </div>
+                            </div>
+                            <div class="screen-footer">数据仅存储于本地设备</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="features">
+            <h2><i class="fas fa-star"></i> 核心特性</h2>
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon"><i class="fas fa-laptop-house"></i></div>
+                    <h3>完全本地化</h3>
+                    <p>所有数据仅存储在本地设备，无需网络连接，不上传任何信息</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon"><i class="fas fa-qrcode"></i></div>
+                    <h3>简单易用</h3>
+                    <p>支持二维码扫描，快速添加令牌，一键复制验证码</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                    <h3>安全加密</h3>
+                    <p>使用 iOS 系统加载机制，保障您的数据安全</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon"><i class="fas fa-palette"></i></div>
+                    <h3>精美设计</h3>
+                    <p>现代化多界面设计，流畅的使用体验</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="privacy">
+            <h2><i class="fas fa-user-shield"></i> 隐私承诺</h2>
+            <p style="margin-bottom: 20px;">我们非常重视您的隐私安全：</p>
+            <ul class="privacy-list">
+                <li><i class="fas fa-check-circle"></i> 不收集任何个人信息</li>
+                <li><i class="fas fa-check-circle"></i> 不建立任何网络连接</li>
+                <li><i class="fas fa-check-circle"></i> 不集成第三方 SDK</li>
+                <li><i class="fas fa-check-circle"></i> 完全开源透明</li>
+            </ul>
+            <a href="#" class="privacy-policy-link">查看完整隐私政策</a>
+        </section>
+        
+        <section id="contact">
+            <h2><i class="fas fa-envelope"></i> 联系我们</h2>
+            <div class="contact-info">
+                <div class="developer-card">
+                    <div class="developer-avatar">SF</div>
+                    <div>
+                        <h3>开发者：YaShuang Zheng</h3>
+                        <p><i class="fas fa-envelope"></i> 邮箱：2216353926@qq.com</p>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <p style="margin-bottom: 20px;">如有任何问题，建议或反馈，欢迎随时联系我们！</p>
+                    <form id="feedback-form">
+                        <div class="form-group">
+                            <label for="name">您的姓名</label>
+                            <input type="text" id="name" placeholder="请输入您的姓名">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">您的邮箱</label>
+                            <input type="email" id="email" placeholder="请输入您的邮箱">
+                        </div>
+                        <div class="form-group">
+                            <label for="message">您的消息</label>
+                            <textarea id="message" rows="4" placeholder="请输入您的问题、建议或反馈"></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">发送消息</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="container">
+        <p class="copyright">© 2025 FFTOTP. All rights reserved.</p>
+        <p>Developed by Shuping Fu</p>
+    </footer>
+    
+    <script>
+        // 表单提交处理
+        document.getElementById('feedback-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+            
+            if (!name || !email || !message) {
+                alert('请填写所有字段后再提交！');
+                return;
+            }
+            
+            // 这里在实际应用中应该发送数据到服务器
+            // 现在只显示成功消息
+            alert('感谢您的反馈！我们会尽快与您联系。');
+            
+            // 重置表单
+            document.getElementById('feedback-form').reset();
+        });
+        
+        // 模拟TOTP令牌更新（演示用途）
+        function updateTokenCodes() {
+            const tokens = document.querySelectorAll('.token-code');
+            tokens.forEach(token => {
+                // 生成6位随机数字
+                const newCode = Array.from({length: 6}, () => Math.floor(Math.random() * 10)).join(' ');
+                token.textContent = newCode;
+            });
+        }
+        
+        // 每30秒更新一次令牌（模拟真实TOTP行为）
+        setInterval(updateTokenCodes, 30000);
+        
+        // 页面加载后立即更新一次
+        updateTokenCodes();
+    </script>
+</body>
+</html>
